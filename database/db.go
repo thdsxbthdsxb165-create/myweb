@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
 )
@@ -10,7 +11,8 @@ import (
 var DB *sql.DB
 
 func Connect() {
-	connString := "sqlserver://sa:123456@127.0.0.1:1433?database=myweb"
+
+	connString := os.Getenv("DB_CONN")
 
 	var err error
 	DB, err = sql.Open("sqlserver", connString)
