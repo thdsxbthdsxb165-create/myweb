@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Up</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#0b1120;--panel:#111827;--line:#263246;--muted:#94a3b8;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;--yellow:#facc15}
+body{margin:0;background:var(--bg);color:white;font-family:'Segoe UI',Arial,sans-serif}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:#101827;border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100vh}
+.brand{font-size:22px;font-weight:800}.subbrand{color:var(--muted);font-size:13px;margin:4px 0 22px}
+.userbox{background:#0b1120;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px}
+.userbox .email{font-size:13px;color:#cbd5e1;word-break:break-all}.userbox .money{font-size:24px;font-weight:800;color:var(--yellow);margin-top:8px}
+.nav-title{color:var(--muted);font-size:12px;text-transform:uppercase;margin:18px 0 8px}
+.nav a{display:flex;color:#dbeafe;text-decoration:none;padding:10px 12px;border-radius:8px;margin-bottom:6px}
+.nav a:hover,.nav a.active{background:#1e293b;color:white}
+.main{padding:24px;min-width:0}.eyebrow{color:var(--muted);font-size:13px;margin-bottom:6px}h1{margin:0 0 22px;font-size:30px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:18px;max-width:760px}
+input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:#0b1120;color:white;margin:7px 0 14px}
+button{padding:10px 14px;background:var(--blue);border:none;border-radius:8px;color:white;font-weight:800;cursor:pointer}
+table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:8px;overflow:hidden}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:#cbd5e1;background:#0b1120}.scroll{overflow-x:auto}
+.success{background:#166534;padding:10px;border-radius:8px;margin-bottom:14px}.error{background:#dc2626;padding:10px;border-radius:8px;margin-bottom:14px}.pending{color:var(--yellow)}.approved{color:var(--green)}.rejected{color:var(--red)}
+@media (max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:static;height:auto}.main{padding:16px}table{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">MyWeb PC</div>
+        <div class="subbrand">Rental control center</div>
+        <div class="userbox">
+            <div class="email">{{.Profile.Email}}</div>
+            <div class="money">{{.Profile.Balance}} baht</div>
+        </div>
+        <nav class="nav">
+            <div class="nav-title">Main</div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">Profile</a>
+            <a class="active" href="/topup">Top up</a>
+            {{if .IsAdmin}}<div class="nav-title">Admin</div><a href="/admin">Admin Panel</a>{{end}}
+            <div class="nav-title">Session</div>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+    <main class="main">
+        <div class="eyebrow">Balance request</div>
+        <h1>Top Up</h1>
+        {{if .Created}}<div class="success">Top-up request created. Please wait for admin approval.</div>{{end}}
+        {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+        <section class="panel">
+            <p>Current balance: <b>{{.Profile.Balance}} baht</b></p>
+            <form method="POST">
+                <label>Amount</label>
+                <input name="amount" type="number" min="1" max="100000" placeholder="100" required>
+                <label>Note / transfer proof</label>
+                <textarea name="note" rows="3" placeholder="Add transfer details or a note for admin"></textarea>
+                <button type="submit">Send Request</button>
+            </form>
+        </section>
+        <h2>Top-up History</h2>
+        <div class="scroll">
+        <table>
+            <tr><th>ID</th><th>Amount</th><th>Status</th><th>Created</th><th>Note</th></tr>
+            {{range .History}}
+            <tr><td>{{.ID}}</td><td>{{.Amount}} baht</td><td class="{{.Status}}">{{.Status}}</td><td>{{.CreatedAt}}</td><td>{{.Note}}</td></tr>
+            {{end}}
+        </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

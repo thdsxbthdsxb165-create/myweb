@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+*{box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;background:#0f172a;color:white;padding:20px;}
+.card{background:#1e293b;padding:36px;width:min(360px,100%);border-radius:14px;box-shadow:0 20px 40px rgba(0,0,0,.45);}
+h2{text-align:center;margin:0 0 24px;}
+.input-group{position:relative;}
+input{width:100%;padding:12px;margin:9px 0;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;}
+.toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:#93c5fd;font-size:13px;}
+button{width:100%;padding:12px;margin-top:14px;background:#2563eb;border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;}
+button:hover{background:#3b82f6;}
+.error{background:#dc2626;padding:10px;border-radius:8px;margin-bottom:12px;text-align:center;}
+.footer{margin-top:15px;text-align:center;color:#cbd5e1;}
+a{color:#38bdf8;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="card">
+    <h2>Login</h2>
+    {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+    <form method="POST">
+        <input name="email" placeholder="Email" required>
+        <div class="input-group">
+            <input id="pass" name="password" type="password" placeholder="Password" required>
+            <span class="toggle" onclick="togglePassword()">Show</span>
+        </div>
+        <button type="submit" id="btn">Login</button>
+    </form>
+    <div class="footer">No account? <a href="/register">Register</a></div>
+</div>
+<script>
+function togglePassword(){
+    const p = document.getElementById("pass");
+    p.type = p.type === "password" ? "text" : "password";
+}
+document.querySelector("form").onsubmit = () => {
+    document.getElementById("btn").innerText = "Loading...";
+};
+</script>
+</body>
+</html>

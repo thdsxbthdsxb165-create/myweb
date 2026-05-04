@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#0b1120;--panel:#111827;--line:#263246;--muted:#94a3b8;--blue:#3b82f6;--yellow:#facc15}
+body{margin:0;background:var(--bg);color:white;font-family:'Segoe UI',Arial,sans-serif}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:#101827;border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100vh}
+.brand{font-size:22px;font-weight:800}.subbrand{color:var(--muted);font-size:13px;margin:4px 0 22px}
+.userbox{background:#0b1120;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px}
+.userbox .email{font-size:13px;color:#cbd5e1;word-break:break-all}.userbox .money{font-size:24px;font-weight:800;color:var(--yellow);margin-top:8px}
+.nav-title{color:var(--muted);font-size:12px;text-transform:uppercase;margin:18px 0 8px}
+.nav a{display:flex;color:#dbeafe;text-decoration:none;padding:10px 12px;border-radius:8px;margin-bottom:6px}
+.nav a:hover,.nav a.active{background:#1e293b;color:white}
+.main{padding:24px;max-width:980px}.eyebrow{color:var(--muted);font-size:13px;margin-bottom:6px}h1{margin:0 0 22px;font-size:30px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px;margin-bottom:18px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.summary div{background:#0b1120;border:1px solid var(--line);border-radius:8px;padding:14px}
+.summary span{display:block;color:var(--muted);font-size:13px}.summary b{display:block;margin-top:6px;font-size:18px;word-break:break-word}.balance{color:var(--yellow)!important;font-size:26px!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;color:#cbd5e1;font-size:13px;margin-bottom:5px}
+input{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:#0b1120;color:white}
+button{padding:10px 14px;background:var(--blue);border:none;border-radius:8px;color:white;font-weight:800;cursor:pointer}.success{background:#166534;padding:10px;border-radius:8px;margin-bottom:14px}
+@media (max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:static;height:auto}.main{padding:16px}.grid,.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">MyWeb PC</div>
+        <div class="subbrand">Rental control center</div>
+        <div class="userbox">
+            <div class="email">{{.Profile.Email}}</div>
+            <div class="money">{{.Profile.Balance}} baht</div>
+        </div>
+        <nav class="nav">
+            <div class="nav-title">Main</div>
+            <a href="/dashboard">Dashboard</a>
+            <a class="active" href="/profile">Profile</a>
+            <a href="/topup">Top up</a>
+            {{if .IsAdmin}}<div class="nav-title">Admin</div><a href="/admin">Admin Panel</a>{{end}}
+            <div class="nav-title">Session</div>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+    <main class="main">
+        <div class="eyebrow">Account details</div>
+        <h1>User Profile</h1>
+        {{if .Saved}}<div class="success">Profile saved</div>{{end}}
+        <section class="panel summary">
+            <div><span>Email</span><b>{{.Profile.Email}}</b></div>
+            <div><span>Role</span><b>{{.Profile.Role}}</b></div>
+            <div><span>Balance</span><b class="balance">{{.Profile.Balance}} baht</b></div>
+        </section>
+        <form method="POST" class="panel">
+            <h2>Personal Info</h2>
+            <div class="grid">
+                <div><label>Phone</label><input name="phone" value="{{.Profile.Phone}}"></div>
+                <div><label>Thai name</label><input name="name_th" value="{{.Profile.NameTH}}"></div>
+                <div><label>English name</label><input name="name_en" value="{{.Profile.NameEN}}"></div>
+                <div><label>Contact</label><input name="contact" value="{{.Profile.Contact}}"></div>
+            </div>
+            <p><button type="submit">Save Profile</button></p>
+        </form>
+    </main>
+</div>
+</body>
+</html>

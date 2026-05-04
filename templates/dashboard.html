@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#0b1120;--panel:#111827;--panel2:#172033;--line:#263246;--text:#eef2ff;--muted:#94a3b8;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;--yellow:#facc15}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:#101827;border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100vh}
+.brand{font-size:22px;font-weight:800;margin-bottom:4px}
+.subbrand{color:var(--muted);font-size:13px;margin-bottom:22px}
+.userbox{background:#0b1120;border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:18px}
+.userbox .email{font-size:13px;color:#cbd5e1;word-break:break-all}
+.userbox .money{font-size:24px;font-weight:800;color:var(--yellow);margin-top:8px}
+.nav-title{color:var(--muted);font-size:12px;text-transform:uppercase;margin:18px 0 8px}
+.nav a{display:flex;align-items:center;gap:10px;color:#dbeafe;text-decoration:none;padding:10px 12px;border-radius:8px;margin-bottom:6px}
+.nav a:hover,.nav a.active{background:#1e293b;color:white}
+.main{padding:24px;min-width:0}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}
+.eyebrow{color:var(--muted);font-size:13px;margin-bottom:6px}
+h1{margin:0;font-size:30px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.pill-link{display:inline-block;background:#1e293b;border:1px solid var(--line);color:white;text-decoration:none;padding:10px 14px;border-radius:8px}
+.pill-link.primary{background:var(--blue);border-color:var(--blue)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+.stat span{display:block;color:var(--muted);font-size:13px}
+.stat b{display:block;font-size:28px;margin-top:4px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px}
+.toolbar h2{margin:0;font-size:20px}
+.hint{color:var(--muted);font-size:13px}
+.pc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.pc-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;min-height:320px}
+.pc-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+.pc-name{font-size:20px;font-weight:800}
+.badge{font-size:12px;border-radius:999px;padding:5px 9px;white-space:nowrap}
+.badge.free{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.35)}
+.badge.busy{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.35)}
+.spec{color:#cbd5e1;line-height:1.5;min-height:46px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.meta div{background:#0b1120;border:1px solid var(--line);border-radius:8px;padding:10px}
+.meta span{display:block;color:var(--muted);font-size:12px}
+.meta b{font-size:16px}
+select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#0b1120;color:white}
+.total-price{color:var(--yellow);font-weight:800;min-height:22px}
+.status{font-weight:800;margin:10px 0 2px}
+.status.free{color:var(--green)}
+.status.busy{color:var(--red)}
+.endtime{color:var(--muted);font-size:13px;min-height:18px}
+button{width:100%;margin-top:auto;padding:11px;background:var(--blue);border:none;color:white;border-radius:8px;cursor:pointer;font-weight:800}
+button:hover:not(:disabled){background:#60a5fa}
+button:disabled{background:#475569;cursor:not-allowed}
+#toast{position:fixed;top:20px;right:20px;min-width:220px;padding:12px 16px;border-radius:8px;color:white;font-size:14px;opacity:0;transform:translateY(-20px);transition:.25s;z-index:9999}
+#toast.show{opacity:1;transform:translateY(0)}
+.toast-success{background:#16a34a}.toast-error{background:#dc2626}
+@media (max-width:1050px){.pc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:static;height:auto}.main{padding:16px}.top{display:block}.actions{margin-top:14px}.stats{grid-template-columns:1fr}.pc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand">MyWeb PC</div>
+        <div class="subbrand">Rental control center</div>
+        <div class="userbox">
+            <div class="email">{{.Email}}</div>
+            <div class="money">{{.Balance}} baht</div>
+        </div>
+        <nav class="nav">
+            <div class="nav-title">Main</div>
+            <a class="active" href="/dashboard">Dashboard</a>
+            <a href="/profile">Profile</a>
+            <a href="/topup">Top up</a>
+            {{if .IsAdmin}}
+            <div class="nav-title">Admin</div>
+            <a href="/admin">Admin Panel</a>
+            {{end}}
+            <div class="nav-title">Session</div>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section class="top">
+            <div>
+                <div class="eyebrow">Live machine status</div>
+                <h1>Rent a PC</h1>
+            </div>
+            <div class="actions">
+                <a class="pill-link primary" href="/topup">Top up balance</a>
+                <a class="pill-link" href="/profile">Edit profile</a>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat"><span>Total PCs</span><b>{{index .Stats "Total"}}</b></div>
+            <div class="stat"><span>Available</span><b>{{index .Stats "Available"}}</b></div>
+            <div class="stat"><span>Busy</span><b>{{index .Stats "Busy"}}</b></div>
+        </section>
+
+        <section class="toolbar">
+            <h2>Machines</h2>
+            <div class="hint">Choose hours, check total, then rent.</div>
+        </section>
+
+        <section class="pc-grid">
+        {{range .PCs}}
+            <article class="pc-card">
+                <div class="pc-head">
+                    <div class="pc-name">{{.Name}}</div>
+                    {{if .IsBusy}}<div class="badge busy">Busy</div>{{else}}<div class="badge free">Ready</div>{{end}}
+                </div>
+                <div class="spec">{{.Spec}}</div>
+
+                <div class="meta">
+                    <div><span>Rate</span><b><span class="pc-price" data-price="{{.Price}}">{{.Price}}</span> baht/hr</b></div>
+                    <div><span>Machine ID</span><b>#{{.ID}}</b></div>
+                </div>
+
+                <label class="hint">Rental duration</label>
+                <select class="rent-hour">
+                    <option value="1">1 hour</option>
+                    <option value="2">2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
+                    <option value="5">5 hours</option>
+                </select>
+
+                <p class="total-price"></p>
+                <p class="status" data-end="{{.End}}"></p>
+                <p class="endtime"></p>
+                <button class="rent-btn" type="button" data-id="{{.ID}}">Rent this PC</button>
+            </article>
+        {{end}}
+        </section>
+    </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.className = "";
+    toast.classList.add(type === "success" ? "toast-success" : "toast-error");
+    toast.classList.add("show");
+    toast.innerText = message;
+    setTimeout(() => toast.classList.remove("show"), 2500);
+}
+function rentPC(id, hour) {
+    fetch("/rent?id=" + encodeURIComponent(id) + "&hour=" + encodeURIComponent(hour))
+        .then(res => {
+            if (!res.ok) return res.text().then(msg => showToast(msg || "Rent failed", "error"));
+            showToast("Rented successfully", "success");
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(() => showToast("Cannot connect to server", "error"));
+}
+function updateStatus() {
+    document.querySelectorAll(".status").forEach(el => {
+        const end = Number(el.dataset.end || 0);
+        const card = el.closest(".pc-card");
+        const btn = card.querySelector(".rent-btn");
+        const badge = card.querySelector(".badge");
+        const endLabel = card.querySelector(".endtime");
+        const available = () => {
+            el.innerText = "Available now";
+            el.className = "status free";
+            endLabel.innerText = "No active rental";
+            btn.disabled = false;
+            btn.innerText = "Rent this PC";
+            badge.className = "badge free";
+            badge.innerText = "Ready";
+        };
+        if (!end) return available();
+        const diff = end - Math.floor(Date.now() / 1000);
+        if (diff <= 0) return available();
+        const m = Math.floor(diff / 60);
+        const s = diff % 60;
+        el.innerText = "In use: " + m + ":" + String(s).padStart(2, "0") + " left";
+        el.className = "status busy";
+        btn.disabled = true;
+        btn.innerText = "Currently busy";
+        badge.className = "badge busy";
+        badge.innerText = "Busy";
+        const date = new Date(end * 1000);
+        endLabel.innerText = "Ends at " + date.getHours() + ":" + String(date.getMinutes()).padStart(2, "0");
+    });
+}
+function updatePrice(card) {
+    const select = card.querySelector(".rent-hour");
+    const priceEl = card.querySelector(".pc-price");
+    const totalEl = card.querySelector(".total-price");
+    const total = Number(priceEl.dataset.price || 0) * Number(select.value || 1);
+    totalEl.innerText = "Total payment: " + total + " baht";
+}
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".pc-card").forEach(card => {
+        const btn = card.querySelector(".rent-btn");
+        const select = card.querySelector(".rent-hour");
+        btn.addEventListener("click", () => rentPC(btn.dataset.id, select.value));
+        select.addEventListener("change", () => updatePrice(card));
+        updatePrice(card);
+    });
+    updateStatus();
+    setInterval(updateStatus, 1000);
+});
+</script>
+</body>
+</html>
